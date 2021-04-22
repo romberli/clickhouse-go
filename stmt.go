@@ -13,6 +13,7 @@ type Stmt interface {
 	driver.Stmt
 	driver.StmtQueryContext
 	driver.StmtExecContext
+	GetQuery() string
 }
 
 type stmt struct {
@@ -202,6 +203,10 @@ func (stmt *stmt) bind(args []driver.NamedValue) (string, []ExternalTable) {
 		buf.WriteString(stmt.query)
 	}
 	return buf.String(), externalTables
+}
+
+func (stmt *stmt) GetQuery() string {
+	return stmt.query
 }
 
 func convertOldArgs(args []driver.Value) []driver.NamedValue {
