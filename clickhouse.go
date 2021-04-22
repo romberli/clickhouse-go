@@ -59,7 +59,7 @@ type clickhouse struct {
 	inTransaction bool
 }
 
-func (ch *clickhouse) Prepare(query string) (Stmt, error) {
+func (ch *clickhouse) Prepare(query string) (driver.Stmt, error) {
 	return ch.prepareContext(context.Background(), query)
 }
 
@@ -67,7 +67,7 @@ func (ch *clickhouse) PrepareContext(ctx context.Context, query string) (Stmt, e
 	return ch.prepareContext(ctx, query)
 }
 
-func (ch *clickhouse) prepareContext(ctx context.Context, query string) (Stmt, error) {
+func (ch *clickhouse) prepareContext(ctx context.Context, query string) (*stmt, error) {
 	ch.logf("[prepare] %s", query)
 	switch {
 	case ch.conn.closed:
@@ -87,7 +87,7 @@ func (ch *clickhouse) prepareContext(ctx context.Context, query string) (Stmt, e
 	}, nil
 }
 
-func (ch *clickhouse) insert(ctx context.Context, query string) (_ Stmt, err error) {
+func (ch *clickhouse) insert(ctx context.Context, query string) (_ *stmt, err error) {
 	if err := ch.sendQuery(ctx, splitInsertRe.Split(query, -1)[0]+" VALUES ", nil); err != nil {
 		return nil, err
 	}
